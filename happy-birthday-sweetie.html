@@ -128,6 +128,20 @@
     box-shadow: 0 6px 18px -6px rgba(234, 168, 79, 0.8);
   }
 
+  .day.birthday {
+    background: transparent;
+    color: #f0a6b8;
+    font-weight: 700;
+    text-shadow: none;
+    box-shadow: none;
+  }
+
+  .day.today.birthday {
+    background: #f0a6b8;
+    color: #4b1728;
+    box-shadow: 0 6px 18px -6px rgba(240, 166, 184, 0.9);
+  }
+
   @media (max-width: 560px) {
     .card { width: 94vw; padding: 1.35rem 0.7rem 0.55rem; gap: 0; }
     .month-cell { font-size: 0.65rem; transform: translate(-0.1rem, -0.25rem); }
@@ -185,6 +199,7 @@
       day.className = "day";
       if (weekday >= 5) day.classList.add("weekend");
       if (d === today) day.classList.add("today");
+      if (d === 7) day.classList.add("birthday");
       day.textContent = d;
       cell.append(dow, day);
       grid.appendChild(cell);

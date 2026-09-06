@@ -38,10 +38,9 @@
     left: 50%;
     bottom: 5vh;
     transform: translateX(-50%);
-    width: min(92vw, 920px);
+    width: calc(100vw - 8vw);
     padding: 1.15rem 1.5rem;
     display: grid;
-    grid-template-columns: minmax(150px, 0.32fr) 1fr;
     align-items: center;
     gap: 1.5rem;
     border-radius: 22px;
@@ -55,7 +54,9 @@
   }
 
   .meta {
-    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
   }
 
   .name {
@@ -63,14 +64,12 @@
     letter-spacing: 0.42em;
     text-transform: uppercase;
     color: #eaa84f;
-    margin-bottom: 0.35rem;
     padding-left: 0.1em;
   }
 
   .month {
     font-size: 1.55rem;
     font-weight: 700;
-    letter-spacing: -0.01em;
     line-height: 1;
   }
 
@@ -78,14 +77,19 @@
     font-size: 0.85rem;
     font-weight: 300;
     color: rgba(246, 242, 234, 0.6);
-    margin-top: 0.15rem;
-    margin-bottom: 1rem;
   }
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 0.15rem;
+    grid-template-columns: repeat(var(--days-in-month), minmax(0, 1fr));
+    gap: 0.25rem;
+  }
+
+  .day-cell {
+    min-width: 0;
+    display: grid;
+    justify-items: center;
+    gap: 0.35rem;
   }
 
   .dow {
@@ -93,24 +97,22 @@
     font-weight: 600;
     letter-spacing: 0.05em;
     color: rgba(246, 242, 234, 0.5);
-    text-align: center;
-    padding-bottom: 0.4rem;
     text-transform: uppercase;
   }
 
   .day {
+    width: 2rem;
+    max-width: 100%;
     aspect-ratio: 1 / 1;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.78rem;
-    font-weight: 400;
     border-radius: 999px;
     color: #f6f2ea;
     text-shadow: 0 1px 2px rgba(0,0,0,0.25);
   }
 
-  .day.empty { visibility: hidden; }
   .day.weekend { color: rgba(246, 242, 234, 0.45); }
 
   .day.today {
@@ -120,11 +122,19 @@
     text-shadow: none;
     box-shadow: 0 6px 18px -6px rgba(234, 168, 79, 0.8);
   }
+
+  @media (max-width: 560px) {
+    .card { width: 94vw; padding: 1rem 1.1rem 1.15rem; }
+    .meta { gap: 0.6rem; }
+    .grid { gap: 0.1rem; }
+    .day-cell { gap: 0.25rem; }
+    .day { width: 1.35rem; font-size: 0.68rem; }
+    .dow { font-size: 0.5rem; }
+  }
 </style>
 </head>
 <body>
   <div class="bg"></div>
-
   <div class="card">
     <div class="meta">
       <div class="name">Jonna</div>
@@ -152,31 +162,23 @@
 
     const grid = document.getElementById("grid");
     grid.innerHTML = "";
-
-    DOW.forEach(d => {
-      const el = document.createElement("div");
-      el.className = "dow";
-      el.textContent = d;
-      grid.appendChild(el);
-    });
-
-    const firstDay = (new Date(y, m, 1).getDay() + 6) % 7;
     const daysInMonth = new Date(y, m + 1, 0).getDate();
-
-    for (let i = 0; i < firstDay; i++) {
-      const el = document.createElement("div");
-      el.className = "day empty";
-      grid.appendChild(el);
-    }
+    grid.style.setProperty("--days-in-month", daysInMonth);
 
     for (let d = 1; d <= daysInMonth; d++) {
-      const el = document.createElement("div");
-      el.className = "day";
+      const cell = document.createElement("div");
+      cell.className = "day-cell";
       const weekday = (new Date(y, m, d).getDay() + 6) % 7;
-      if (weekday >= 5) el.classList.add("weekend");
-      if (d === today) el.classList.add("today");
-      el.textContent = d;
-      grid.appendChild(el);
+      const dow = document.createElement("div");
+      dow.className = "dow";
+      dow.textContent = DOW[weekday];
+      const day = document.createElement("div");
+      day.className = "day";
+      if (weekday >= 5) day.classList.add("weekend");
+      if (d === today) day.classList.add("today");
+      day.textContent = d;
+      cell.append(dow, day);
+      grid.appendChild(cell);
     }
   }
 
